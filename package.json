@@ -1,0 +1,12 @@
+{
+  "name": "bridge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Bridge-1319/bridge.git",
+  "author": "vikashjman <vikashkumar@jmangroup.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
