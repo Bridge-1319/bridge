@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,8 +10,8 @@ datasource db {
 model Organization {
   id               String             @id @default(uuid())
   name             String
-  contact_email    String?
-  phone_number     String?
+  contact_email    String?            @unique
+  phone_number     String?            @unique
   users            User[]
   skillCategories  SkillCategory[]
   roles            Role[]
@@ -31,38 +25,38 @@ model Organization {
 }
 
 model User {
-  id             String          @id @default(uuid())
-  password       String
-  org_id         String
-  firstName      String
-  lastName       String
-  emailAddress   String          @unique
-  roleId         String?
-  locationId     String?
-  securityGroup  String
-  organization   Organization    @relation(fields: [org_id], references: [id])
-  role           Role?           @relation(fields: [roleId], references: [id])
-  location       Location?       @relation(fields: [locationId], references: [id])
-  userSkills     UserSkill[]
-  userAuditLogs SkillAuditLog[] @relation("User")
-  approversAuditLogs SkillAuditLog[] @relation("Approver")
+  id                 Int               @id @default(autoincrement())
+  password           String
+  org_id             String
+  firstName          String
+  lastName           String
+  emailAddress       String            @unique
+  roleId             Int?        
+  locationId         Int?
+  securityGroup      SecurityGroup
+  organization       Organization      @relation(fields: [org_id], references: [id])
+  role               Role?             @relation(fields: [roleId], references: [id])
+  location           Location?         @relation(fields: [locationId], references: [id])
+  userSkills         UserSkill[]
+  userAuditLogs      SkillAuditLog[]   @relation("User")
+  approversAuditLogs SkillAuditLog[]   @relation("Approver")
 }
 
 model SkillCategory {
-  id           String       @id @default(uuid())
+  id           Int               @id @default(autoincrement())
   org_id       String
   name         String
   description  String?
-  organization Organization @relation(fields: [org_id], references: [id])
+  organization Organization     @relation(fields: [org_id], references: [id])
   skills       Skill[]
 }
 
 model Skill {
-  id                String            @id @default(uuid())
+  id                Int               @id @default(autoincrement())
   name              String
   description       String?
   org_id            String
-  skill_category_id String
+  skill_category_id Int
   organization      Organization      @relation(fields: [org_id], references: [id])
   category          SkillCategory     @relation(fields: [skill_category_id], references: [id])
   userSkills        UserSkill[]
@@ -72,11 +66,11 @@ model Skill {
 }
 
 model Role {
-  id               String            @id @default(uuid())
+  id               Int               @id @default(autoincrement())
   name             String
   description      String?
   org_id           String
-  parent_id        String?
+  parent_id        Int?
   organization     Organization      @relation(fields: [org_id], references: [id])
   parentRole       Role?             @relation("ParentRole", fields: [parent_id], references: [id])
   childRoles       Role[]            @relation("ParentRole")
@@ -85,84 +79,86 @@ model Role {
 }
 
 model RoleSkillTarget {
-  id       String @id @default(uuid())
-  role_id  String
-  skill_id String
-  target   String
+  id       Int @id @default(autoincrement())
+  role_id  Int
+  skill_id Int
+  target   Int
   role     Role   @relation(fields: [role_id], references: [id])
   skill    Skill  @relation(fields: [skill_id], references: [id])
 }
 
 model Location {
-  id           String       @id @default(uuid())
+  id           Int               @id @default(autoincrement())
   org_id       String
   name         String
   description  String?
   latitude     Float
   longitude    Float
-  organization Organization @relation(fields: [org_id], references: [id])
+  organization Organization     @relation(fields: [org_id], references: [id])
   users        User[]
 }
 
 model UserSkill {
-  userId      String @id @default(uuid())
-  skillId     String
-  rating      Int    @default(0)
-  proficiency Int    @default(0)
-  user        User   @relation(fields: [userId], references: [id])
-  skill       Skill  @relation(fields: [skillId], references: [id])
+  id           Int @id @default(autoincrement())
+  userId       Int
+  skillId      Int
+  rating       Int    @default(0)
+  proficiency  Int    @default(0)
+  interest     Int    @default(0)
+  user         User   @relation(fields: [userId], references: [id])
+  skill        Skill  @relation(fields: [skillId], references: [id])
 }
 
 model Training {
-  trainingId       String             @id @default(uuid())
-  org_id           String
-  name             String
-  target           String
-  skillId          String
-  duration         String
-  description      String?
-  url              String?
-  instructor       String?
-  startDate        DateTime?
-  endDate          DateTime?
-  organization     Organization       @relation(fields: [org_id], references: [id])
-  skill            Skill              @relation(fields: [skillId], references: [id])
+  id              Int               @id @default(autoincrement())
+  org_id          String
+  name            String
+  target          String
+  skillId         Int
+  duration        String
+  description     String?
+  url             String?
+  instructor      String?
+  startDate       DateTime?
+  endDate         DateTime?
+  organization    Organization      @relation(fields: [org_id], references: [id])
+  skill           Skill             @relation(fields: [skillId], references: [id])
   TrainingEvidence TrainingEvidence[]
 }
 
 model SkillAuditLog {
-  org_id           String             @default(uuid())
-  id               String             @id @default(uuid())
-  evidenceId       String?
-  skill_id         String
-  user_id          String
-  approver_id      String
-  timestamp        DateTime
-  feedback         String?
-  rating           Int?
-  organization     Organization       @relation(fields: [org_id], references: [id])
-  skill            Skill              @relation(fields: [skill_id], references: [id])
-  user             User               @relation("User", fields: [user_id], references: [id])
-  approver         User               @relation("Approver", fields: [approver_id], references: [id])
-  GeneralEvidence  GeneralEvidence[]
+  id              Int               @id @default(autoincrement())
+  org_id          String
+  evidenceId      Int?
+  skill_id        Int
+  user_id         Int
+  approver_id     Int
+  timestamp       DateTime
+  feedback        String?
+  rating          Int?
+  organization    Organization      @relation(fields: [org_id], references: [id])
+  skill           Skill             @relation(fields: [skill_id], references: [id])
+  user            User              @relation("User", fields: [user_id], references: [id])
+  approver        User              @relation("Approver", fields: [approver_id], references: [id])
+  GeneralEvidence GeneralEvidence[]
   TrainingEvidence TrainingEvidence[]
 }
 
 model EvidenceType {
-  org_id           String             @default(uuid())
-  id               String             @id @default(uuid())
-  name             String
-  description      String?
-  organization     Organization       @relation(fields: [org_id], references: [id])
-  GeneralEvidence  GeneralEvidence[]
+  id              Int               @id @default(autoincrement())
+  org_id          String
+  name            String
+  description     String?
+  organization    Organization      @relation(fields: [org_id], references: [id])
+  GeneralEvidence GeneralEvidence[]
   TrainingEvidence TrainingEvidence[]
 }
 
 model GeneralEvidence {
-  id                   String        @id @default(uuid())
-  auditId              String        @unique
-  typeId               String
-  evidenceId           String?       @unique
+  id                   Int               @id @default(autoincrement())
+  auditId              Int
+  typeId               Int
+  evidenceId           Int?              @unique
   org_id               String
   project_title        String?
   roles                String?
@@ -179,21 +175,27 @@ model GeneralEvidence {
   date_taken           DateTime?
   score_grade          String?
   comments             String?
-  skillAuditLog        SkillAuditLog @relation(fields: [auditId], references: [id])
-  evidenceType         EvidenceType  @relation(fields: [typeId], references: [id])
-  organization         Organization  @relation(fields: [org_id], references: [id])
+  skillAuditLog        SkillAuditLog    @relation(fields: [auditId], references: [id])
+  evidenceType         EvidenceType     @relation(fields: [typeId], references: [id])
+  organization         Organization     @relation(fields: [org_id], references: [id])
 }
 
 model TrainingEvidence {
-  id                String        @id @default(uuid())
-  auditId           String
-  evidenceId        String
-  trainingId        String
+  id                Int               @id @default(autoincrement())
+  auditId           Int
+  evidenceId        Int
+  trainingId        Int
   certification_url String?
   comments          String?
   org_id            String
-  skillAuditLog     SkillAuditLog @relation(fields: [auditId], references: [id])
-  evidenceType      EvidenceType  @relation(fields: [evidenceId], references: [id])
-  training          Training      @relation(fields: [trainingId], references: [trainingId])
-  organization      Organization  @relation(fields: [org_id], references: [id])
+  skillAuditLog     SkillAuditLog    @relation(fields: [auditId], references: [id])
+  evidenceType      EvidenceType     @relation(fields: [evidenceId], references: [id])
+  training          Training         @relation(fields: [trainingId], references: [id])
+  organization      Organization     @relation(fields: [org_id], references: [id])
+}
+
+enum SecurityGroup {
+  Admin
+  Supervisor
+  User
 }
