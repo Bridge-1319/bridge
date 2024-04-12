@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Organization {
-  id               String             @id @default(uuid())
+  id               String             @id
   name             String
   contact_email    String?            @unique
   phone_number     String?            @unique
@@ -25,29 +25,36 @@ model Organization {
 }
 
 model User {
-  id                 Int               @id @default(autoincrement())
+  id                 Int             @id @default(autoincrement())
   password           String
   org_id             String
   firstName          String
   lastName           String
-  emailAddress       String            @unique
-  roleId             Int?        
+  emailAddress       String          @unique
+  roleId             Int?
   locationId         Int?
   securityGroup      SecurityGroup
-  organization       Organization      @relation(fields: [org_id], references: [id])
-  role               Role?             @relation(fields: [roleId], references: [id])
-  location           Location?         @relation(fields: [locationId], references: [id])
+  organization       Organization    @relation(fields: [org_id], references: [id])
+  role               Role?           @relation(fields: [roleId], references: [id])
+  location           Location?       @relation(fields: [locationId], references: [id])
   userSkills         UserSkill[]
-  userAuditLogs      SkillAuditLog[]   @relation("User")
-  approversAuditLogs SkillAuditLog[]   @relation("Approver")
+  userAuditLogs      SkillAuditLog[] @relation("UserAuditLogUser")
+  approversAuditLogs SkillAuditLog[] @relation("UserAuditLogApprover")
+  UserTraining       UserTraining[]  @relation("UserTrainingUser")
+  updatedTrainings   UserTraining[]  @relation("UpdatedTrainings")
+  userTrainingId     Int?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  // Remove the duplicate field "UserTraining" from the "User" model
+  // UserTraining       UserTraining[]
 }
 
 model SkillCategory {
-  id           Int               @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   org_id       String
   name         String
   description  String?
-  organization Organization     @relation(fields: [org_id], references: [id])
+  organization Organization @relation(fields: [org_id], references: [id])
   skills       Skill[]
 }
 
@@ -79,86 +86,90 @@ model Role {
 }
 
 model RoleSkillTarget {
-  id       Int @id @default(autoincrement())
+  id       Int   @id @default(autoincrement())
   role_id  Int
   skill_id Int
   target   Int
-  role     Role   @relation(fields: [role_id], references: [id])
-  skill    Skill  @relation(fields: [skill_id], references: [id])
+  role     Role  @relation(fields: [role_id], references: [id])
+  skill    Skill @relation(fields: [skill_id], references: [id])
 }
 
 model Location {
-  id           Int               @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   org_id       String
   name         String
   description  String?
   latitude     Float
   longitude    Float
-  organization Organization     @relation(fields: [org_id], references: [id])
+  organization Organization @relation(fields: [org_id], references: [id])
   users        User[]
 }
 
 model UserSkill {
-  id           Int @id @default(autoincrement())
-  userId       Int
-  skillId      Int
-  rating       Int    @default(0)
-  proficiency  Int    @default(0)
-  interest     Int    @default(0)
-  user         User   @relation(fields: [userId], references: [id])
-  skill        Skill  @relation(fields: [skillId], references: [id])
+  id          Int   @id @default(autoincrement())
+  userId      Int
+  skillId     Int
+  rating      Int   @default(0)
+  proficiency Int   @default(0)
+  interest    Int   @default(0)
+  user        User  @relation(fields: [userId], references: [id])
+  skill       Skill @relation(fields: [skillId], references: [id])
 }
 
 model Training {
-  id              Int               @id @default(autoincrement())
-  org_id          String
-  name            String
-  target          String
-  skillId         Int
-  duration        String
-  description     String?
-  url             String?
-  instructor      String?
-  startDate       DateTime?
-  endDate         DateTime?
-  organization    Organization      @relation(fields: [org_id], references: [id])
-  skill           Skill             @relation(fields: [skillId], references: [id])
+  id               Int                @id @default(autoincrement())
+  org_id           String
+  name             String
+  target           Int
+  skillId          Int
+  duration         String
+  description      String?
+  url              String?
+  instructor       String?
+  startDate        DateTime?
+  endDate          DateTime?
+  organization     Organization       @relation(fields: [org_id], references: [id])
+  skill            Skill              @relation(fields: [skillId], references: [id])
   TrainingEvidence TrainingEvidence[]
+  UserTraining     UserTraining[]     @relation("UserTrainingTraining")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model SkillAuditLog {
-  id              Int               @id @default(autoincrement())
-  org_id          String
-  evidenceId      Int?
-  skill_id        Int
-  user_id         Int
-  approver_id     Int
-  timestamp       DateTime
-  feedback        String?
-  rating          Int?
-  organization    Organization      @relation(fields: [org_id], references: [id])
-  skill           Skill             @relation(fields: [skill_id], references: [id])
-  user            User              @relation("User", fields: [user_id], references: [id])
-  approver        User              @relation("Approver", fields: [approver_id], references: [id])
-  GeneralEvidence GeneralEvidence[]
+  id               Int                @id @default(autoincrement())
+  org_id           String
+  evidenceId       Int?
+  skill_id         Int
+  user_id          Int
+  approver_id      Int
+  feedback         String?
+  rating           Int?
+  organization     Organization       @relation(fields: [org_id], references: [id])
+  skill            Skill              @relation(fields: [skill_id], references: [id])
+  user             User               @relation(name: "UserAuditLogUser", fields: [user_id], references: [id])
+  approver         User               @relation(name: "UserAuditLogApprover", fields: [approver_id], references: [id])
+  GeneralEvidence  GeneralEvidence[]
   TrainingEvidence TrainingEvidence[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model EvidenceType {
-  id              Int               @id @default(autoincrement())
-  org_id          String
-  name            String
-  description     String?
-  organization    Organization      @relation(fields: [org_id], references: [id])
-  GeneralEvidence GeneralEvidence[]
+  id               Int                @id @default(autoincrement())
+  org_id           String
+  name             String
+  description      String?
+  organization     Organization       @relation(fields: [org_id], references: [id])
+  GeneralEvidence  GeneralEvidence[]
   TrainingEvidence TrainingEvidence[]
 }
 
 model GeneralEvidence {
-  id                   Int               @id @default(autoincrement())
+  id                   Int           @id @default(autoincrement())
   auditId              Int
   typeId               Int
-  evidenceId           Int?              @unique
+  evidenceId           Int?          @unique
   org_id               String
   project_title        String?
   roles                String?
@@ -175,27 +186,44 @@ model GeneralEvidence {
   date_taken           DateTime?
   score_grade          String?
   comments             String?
-  skillAuditLog        SkillAuditLog    @relation(fields: [auditId], references: [id])
-  evidenceType         EvidenceType     @relation(fields: [typeId], references: [id])
-  organization         Organization     @relation(fields: [org_id], references: [id])
+  skillAuditLog        SkillAuditLog @relation(fields: [auditId], references: [id])
+  evidenceType         EvidenceType  @relation(fields: [typeId], references: [id])
+  organization         Organization  @relation(fields: [org_id], references: [id])
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 }
 
 model TrainingEvidence {
-  id                Int               @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   auditId           Int
   evidenceId        Int
   trainingId        Int
   certification_url String?
   comments          String?
   org_id            String
-  skillAuditLog     SkillAuditLog    @relation(fields: [auditId], references: [id])
-  evidenceType      EvidenceType     @relation(fields: [evidenceId], references: [id])
-  training          Training         @relation(fields: [trainingId], references: [id])
-  organization      Organization     @relation(fields: [org_id], references: [id])
+  skillAuditLog     SkillAuditLog @relation(fields: [auditId], references: [id])
+  evidenceType      EvidenceType  @relation(fields: [evidenceId], references: [id])
+  training          Training      @relation(fields: [trainingId], references: [id])
+  organization      Organization  @relation(fields: [org_id], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model UserTraining {
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  trainingId     Int
+  completionDate DateTime?
+  updatedBy      Int
+  user           User      @relation(name: "UserTrainingUser", fields: [userId], references: [id])
+  training       Training  @relation(name: "UserTrainingTraining", fields: [trainingId], references: [id])
+  updatedByUser  User      @relation("UpdatedTrainings", fields: [updatedBy], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 enum SecurityGroup {
   Admin
   Supervisor
-  User
+  General
 }

@@ -25,6 +25,8 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import TrainingListing from "@/components/listings/training/training-table";
+import AuditSkillListing from "@/components/listings/audits/audit-table";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -165,18 +167,18 @@ export default function page() {
             <TabsTrigger value="overview">
               Overview
             </TabsTrigger>
-            <TabsTrigger value="skills">
+            <TabsTrigger value="skills" disabled>
               Skills
             </TabsTrigger>
             <TabsTrigger value="audits">
               Audits
             </TabsTrigger>
-            <TabsTrigger value="competency">
+            {/* <TabsTrigger value="competency" disabled>
               Competency
             </TabsTrigger>
-            <TabsTrigger value="carrer">
+            <TabsTrigger value="carrer" disabled>
               Carrer
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger value="training">
               Training
             </TabsTrigger>
@@ -184,6 +186,7 @@ export default function page() {
           
 
           <TabsContent value="overview">
+          <div className="overflow-auto h-full">
             {/* Basic Cards */}
             <div className="grid grid-cols-12 md:grid-cols-3 gap-2 mb-6">
               <Card className="rounded-md md:flex justify-between items-center p-6  shadow-md py-8">
@@ -292,7 +295,7 @@ export default function page() {
               <Card className="col-span-1 flex flex-col gap-2 rounded-md p-4 dark:bg-black bg-white shadow-lg">
                 <h1 className="font-bold text-2xl mb-2 ">Top 10 Interests</h1>
                 {skills.map(skill => (
-                  <div key={skill.rank} className="flex justify-start items-center gap-4">
+                  <div key={skill.name} className="flex justify-start items-center gap-4">
                     <p className="text-lg font-semibold" style={{ width: '30px', textAlign: 'right' }}>{skill.rank}</p>
                     <Badge className="mr-4 bg-blue-500 text-white px-2 py-1 rounded">{skill.score.toFixed(1)}</Badge>
                     <p className="text-gray-700">{skill.name}</p>
@@ -317,7 +320,7 @@ export default function page() {
                 {peopleWithSimilarSkills.map(people => (
                   <div className="flex justify-between items-center">
 
-                    <div key={people.rank} className="flex justify-start items-center gap-2">
+                    <div key={people.name} className="flex justify-start items-center gap-2">
                       <p className="text-lg font-semibold mr-2" style={{ width: '30px', textAlign: 'right' }}>{people.rank}</p>
                       <Avatar className='flex justify-between items-center ring-white'>
                         <AvatarImage className='rounded-full size-9 w-6 h-6' src="https://github.com/shadcn.png" />
@@ -343,9 +346,20 @@ export default function page() {
                 ))}
               </Card>
             </div>
+                </div>
+            </TabsContent>
+
+          <TabsContent value="training">
+                <TrainingListing/>
+          </TabsContent>
+
+          <TabsContent value="audits">
+            <AuditSkillListing/>
           </TabsContent>
         </Tabs>
       </div>
-    </ScrollArea>
+     </ScrollArea>
   );
 }
+
+      

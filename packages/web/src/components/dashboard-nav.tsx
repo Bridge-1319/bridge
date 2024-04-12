@@ -67,7 +67,7 @@ export function DashboardNav({ items, setOpen }: DashboardNavProps) {
                                       <div className="w-6"><Icon size={15} className="mr-2" /></div> {/* Use the icon component */}
                                       {menu.name}
                                     </div>
-                                    <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
+                                    {/* <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" /> */}
                                   </div>
                                 </a>
                               </AccordionTrigger>

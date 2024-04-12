@@ -339,7 +339,7 @@ export const menus: Menu[] = [
       label: "Listing",
       name: "Directories",
       icon: "folder",
-      href: "/",
+      href: "/dashboard",
       submenu: [
           {
               name: "Courses",
@@ -354,7 +354,7 @@ export const menus: Menu[] = [
           {
               name: "People",
               icon: "users",
-              href: "/og/directories/people/",
+              href: "/dashboard/peoples/",
           },
           {
               name: "Roles",
