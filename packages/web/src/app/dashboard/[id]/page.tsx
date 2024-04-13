@@ -137,6 +137,13 @@ const skills = [
   { rank: 9, score: 5.0, name: 'Project management' },
   { rank: 10, score: 5.0, name: 'Risk management' },
 ];
+const keenToLearnData = [
+  
+  { rank: 1, score: 5.0, name: 'ASP.net' },
+  { rank: 2, score: 5.0, name: 'Bootstrap' },
+  { rank: 3, score: 5.0, name: 'Project management' },
+  { rank: 4, score: 5.0, name: 'Risk management' },
+];
 
 
 const topInterests = [
@@ -155,7 +162,7 @@ const topInterests = [
 
 const peopleWithSimilarSkills = [
   { rank: 1, name: 'John Doe', title: 'Business Analyst', skills: 187, location: 'Chennai' },
-  { rank: 2, name: 'John Doe', title: 'Architect', skills: 17, location: 'Lucknow' },
+  { rank: 2, name: 'Jane Smith', title: 'Architect', skills: 17, location: 'Lucknow' },
 ]
 export default function page() {
   return (
@@ -304,7 +311,7 @@ export default function page() {
               </Card>
 
               <Card className="col-span-1 flex flex-col gap-2 rounded-md p-4 dark:bg-black bg-white shadow-lg">
-                <h1 className="font-bold text-2xl mb-2 ">Top 10 Interests</h1>
+                <h1 className="font-bold text-2xl mb-2 ">Top 10 Skills</h1>
                 {skills.map(skill => (
                   <div key={skill.rank} className="flex justify-start items-center gap-4">
                     <p className="text-lg font-semibold" style={{ width: '30px', textAlign: 'right' }}>{skill.rank}</p>
@@ -318,7 +325,7 @@ export default function page() {
               <Card className="col-span-1 flex flex-col  rounded-md p-4 dark:bg-black bg-white shadow-lg">
                 <h1 className="font-bold text-2xl mb-1">People with similar skills</h1>
                 {peopleWithSimilarSkills.map(people => (
-                  <div className="flex justify-between items-center">
+                  <div key={people.rank} className="flex justify-between items-center">
 
                     <div key={people.name} className="flex justify-start items-center gap-2">
                       <p className="text-lg font-semibold mr-2" style={{ width: '30px', textAlign: 'right' }}>{people.rank}</p>
@@ -336,9 +343,9 @@ export default function page() {
 
 
 
-              <Card className="col-span-1 col-span-1 flex flex-col gap-2 rounded-md p-4 dark:bg-black bg-white shadow-lg">
-                <h1 className="font-bold text-2xl mb-2 ">Top 10 Interests</h1>
-                {skills.map(skill => (
+              <Card className="col-span-1  flex flex-col gap-2 rounded-md p-4 dark:bg-black bg-white shadow-lg">
+                <h1 className="font-bold text-2xl mb-2 ">Keen to learn</h1>
+                {keenToLearnData.map(skill => (
                   <div key={skill.rank} className="flex justify-start items-center gap-4">
                     <p className="text-lg font-semibold dark:text-white" style={{ width: '30px', textAlign: 'right' }}>{skill.rank}</p>
                     <p className="text-gray-700">{skill.name}</p>
